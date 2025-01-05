@@ -52,14 +52,24 @@ def download_file(drive_service, file_id, file_name, local_folder_path, mime_typ
         mime_type_export, file_extension = google_mime_map[mime_type]
         request = drive_service.files().export_media(fileId=file_id, mimeType=mime_type_export)
     else:
-        # Preserve original file extension by extracting from MIME type or default to a general type
-        file_extension = '.' + mime_type.split('/')[-1].split(';')[0] if '/' in mime_type else '.bin'
+        # Handle existing Microsoft Office files and other types
+        if mime_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+            file_extension = '.docx'
+        elif mime_type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+            file_extension = '.xlsx'
+        elif mime_type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+            file_extension = '.pptx'
+        else:
+            file_extension = '.' + mime_type.split('/')[-1].split(';')[0] if '/' in mime_type else '.bin'
+        
         request = drive_service.files().get_media(fileId=file_id)
-
-    # Append file extension if not already present, or if a conversion extension has been specified
-    if not file_name.lower().endswith(file_extension):
-        file_name += file_extension
-
+    
+    # Remove any existing extension from the file name
+    file_name = os.path.splitext(file_name)[0]
+    
+    # Append the correct file extension
+    file_name += file_extension
+    
     file_path_with_extension = os.path.join(local_folder_path, file_name)
     os.makedirs(os.path.dirname(file_path_with_extension), exist_ok=True)
 
