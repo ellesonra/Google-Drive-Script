@@ -103,11 +103,3 @@ Important:
 This software is not officially supported or endorsed by Google.
 Use at your own risk.
 
-📹 Demo (Optional)
-If you're applying for OAuth scope verification, you must include a YouTube demo video showing:
-
-How you authenticate users
-
-Which scopes you're using
-
-How the data will be accessed/exported
